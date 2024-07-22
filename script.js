@@ -32,3 +32,27 @@ function operate(num1, num2, op) {
             break;
     }
 }
+
+
+const keypad = document.querySelector(".keypad");
+const screen = document.querySelector(".screen");
+let display_value = "";
+
+keypad.addEventListener("click", (event) => {
+    if (event.target.classList.contains("key")) {
+        key = event.target.innerText;
+
+        switch (key) {
+            case "CLEAR":
+                display_value = "";
+                break;
+            case "CANCEL":
+                display_value = display_value.slice(0, -1);
+                break;
+            default:
+                display_value += key;
+        }
+
+        screen.innerText = display_value;
+    }
+})
