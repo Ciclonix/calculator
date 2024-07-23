@@ -1,4 +1,4 @@
-let first_num, second_num, operator, result;
+let first_num = "", second_num = "", operator = "";
 
 function add(a, b) {
     return a + b;
@@ -17,6 +17,10 @@ function div(a, b) {
 }
 
 function operate(num1, num2, op) {
+    let result;
+    num1 = parseFloat(num1);
+    num2 = parseFloat(num2);
+    
     switch (op) {
         case "+":
             result = add(num1, num2);
@@ -31,6 +35,8 @@ function operate(num1, num2, op) {
             result = div(num1, num2);
             break;
     }
+
+    return result;
 }
 
 
@@ -48,6 +54,22 @@ keypad.addEventListener("click", (event) => {
                 break;
             case "CANCEL":
                 display_value = display_value.slice(0, -1);
+                break;
+            case "+":
+            case "-":
+            case "*":
+            case "/":
+                if (operator !== "") {
+                    [first_num, second_num] = display_value.split(" " + operator + " ")
+                    display_value = operate(first_num, second_num, operator);
+                }
+                operator = key;
+                display_value += " " + key + " ";
+                break;
+            case "=":
+                [first_num, second_num] = display_value.split(" " + operator + " ")
+                display_value = operate(first_num, second_num, operator);
+                operator = "";
                 break;
             default:
                 display_value += key;
