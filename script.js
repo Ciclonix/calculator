@@ -1,4 +1,4 @@
-let first_num = "", second_num = "", operator = "";
+let first_num = "", second_num = "", operator = "", new_num = false, error = false;
 
 function add(a, b) {
     return a + b;
@@ -20,7 +20,7 @@ function operate(num1, num2, op) {
     let result;
     num1 = parseFloat(num1);
     num2 = parseFloat(num2);
-    
+
     switch (op) {
         case "+":
             result = add(num1, num2);
@@ -32,11 +32,21 @@ function operate(num1, num2, op) {
             result = mul(num1, num2);
             break;
         case "/":
+            if (num2 === 0) {
+                error = true;
+                return "(x_x)";
+            }
             result = div(num1, num2);
             break;
     }
 
-    return result;
+    if (Number.isNaN(result) || result == Infinity) {
+        error = true;
+        return "ERROR";
+    }
+
+    result = Math.round(result * 1000) / 1000
+    return String(result);
 }
 
 
@@ -48,9 +58,20 @@ keypad.addEventListener("click", (event) => {
     if (event.target.classList.contains("key")) {
         key = event.target.innerText;
 
+        if (error) {
+            display_value = "";
+            first_num = "";
+            second_num = "";
+            operator = "";
+            error = false;
+        }
+
         switch (key) {
             case "CLEAR":
                 display_value = "";
+                first_num = "";
+                second_num = "";
+                operator = "";
                 break;
             case "CANCEL":
                 display_value = display_value.slice(0, -1);
@@ -60,21 +81,38 @@ keypad.addEventListener("click", (event) => {
             case "*":
             case "/":
                 if (operator !== "") {
-                    [first_num, second_num] = display_value.split(" " + operator + " ")
+                    second_num = display_value;
                     display_value = operate(first_num, second_num, operator);
                 }
+
+                first_num = display_value;
                 operator = key;
-                display_value += " " + key + " ";
+                new_num = true;
                 break;
             case "=":
-                [first_num, second_num] = display_value.split(" " + operator + " ")
-                display_value = operate(first_num, second_num, operator);
-                operator = "";
+                if (operator !== "") {
+                    second_num = display_value;
+                    display_value = operate(first_num, second_num, operator);
+                    operator = "";
+                }
                 break;
+            case ".":
+                if (display_value.includes(".")) break;
             default:
+                if (display_value.length == 14 && !new_num) break;
+
+                if (new_num) {
+                    display_value = "";
+                    new_num = false;
+                }
                 display_value += key;
         }
 
+        if (display_value.length > 14) {
+            display_value = "TOO BIG";
+            error = true;
+        }
+        
         screen.innerText = display_value;
     }
 })
