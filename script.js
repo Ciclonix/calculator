@@ -1,20 +1,27 @@
-let first_num = "", second_num = "", operator = "", new_num = false, error = false;
+let first_num = "", second_num = "", operator = "", display_value = "", new_num = false, error = false;
+const keypad = document.querySelector(".keypad");
+const screen = document.querySelector(".screen");
+
 
 function add(a, b) {
     return a + b;
 }
 
+
 function sub(a, b) {
     return a - b;
 }
+
 
 function mul(a, b) {
     return a * b;
 }
 
+
 function div(a, b) {
     return a / b;
 }
+
 
 function operate(num1, num2, op) {
     let result;
@@ -28,10 +35,10 @@ function operate(num1, num2, op) {
         case "-":
             result = sub(num1, num2);
             break;
-        case "*":
+        case "×":
             result = mul(num1, num2);
             break;
-        case "/":
+        case "÷":
             if (num2 === 0) {
                 error = true;
                 return "(x_x)";
@@ -45,14 +52,9 @@ function operate(num1, num2, op) {
         return "ERROR";
     }
 
-    result = Math.round(result * 1000) / 1000
-    return String(result);
+    return String(Math.round(result * 1000) / 1000);
 }
 
-
-const keypad = document.querySelector(".keypad");
-const screen = document.querySelector(".screen");
-let display_value = "";
 
 keypad.addEventListener("click", (event) => {
     if (event.target.classList.contains("key")) {
@@ -78,8 +80,8 @@ keypad.addEventListener("click", (event) => {
                 break;
             case "+":
             case "-":
-            case "*":
-            case "/":
+            case "×":
+            case "÷":
                 if (operator !== "") {
                     second_num = display_value;
                     display_value = operate(first_num, second_num, operator);
@@ -99,7 +101,7 @@ keypad.addEventListener("click", (event) => {
             case ".":
                 if (display_value.includes(".")) break;
             default:
-                if (display_value.length == 14 && !new_num) break;
+                if (display_value.length == 11 && !new_num) break;
 
                 if (new_num) {
                     display_value = "";
@@ -108,7 +110,7 @@ keypad.addEventListener("click", (event) => {
                 display_value += key;
         }
 
-        if (display_value.length > 14) {
+        if (display_value.length > 11) {
             display_value = "TOO BIG";
             error = true;
         }
