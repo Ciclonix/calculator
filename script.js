@@ -56,65 +56,81 @@ function operate(num1, num2, op) {
 }
 
 
-keypad.addEventListener("click", (event) => {
-    if (event.target.classList.contains("key")) {
-        key = event.target.innerText;
+function update(key) {
+    if (error) {
+        display_value = "";
+        first_num = "";
+        second_num = "";
+        operator = "";
+        error = false;
+    }
 
-        if (error) {
+    switch (key) {
+        case "CLEAR":
             display_value = "";
             first_num = "";
             second_num = "";
             operator = "";
-            error = false;
-        }
+            break;
+        case "CANCEL":
+            display_value = display_value.slice(0, -1);
+            break;
+        case "+":
+        case "-":
+        case "×":
+        case "÷":
+            if (operator !== "") {
+                second_num = display_value;
+                display_value = operate(first_num, second_num, operator);
+            }
 
-        switch (key) {
-            case "CLEAR":
-                display_value = "";
-                first_num = "";
-                second_num = "";
+            first_num = display_value;
+            operator = key;
+            new_num = true;
+            break;
+        case "=":
+            if (operator !== "") {
+                second_num = display_value;
+                display_value = operate(first_num, second_num, operator);
                 operator = "";
-                break;
-            case "CANCEL":
-                display_value = display_value.slice(0, -1);
-                break;
-            case "+":
-            case "-":
-            case "×":
-            case "÷":
-                if (operator !== "") {
-                    second_num = display_value;
-                    display_value = operate(first_num, second_num, operator);
-                }
+            }
+            break;
+        case ".":
+            if (display_value.includes(".")) break;
+        default:
+            if (display_value.length == 11 && !new_num) break;
 
-                first_num = display_value;
-                operator = key;
-                new_num = true;
-                break;
-            case "=":
-                if (operator !== "") {
-                    second_num = display_value;
-                    display_value = operate(first_num, second_num, operator);
-                    operator = "";
-                }
-                break;
-            case ".":
-                if (display_value.includes(".")) break;
-            default:
-                if (display_value.length == 11 && !new_num) break;
-
-                if (new_num) {
-                    display_value = "";
-                    new_num = false;
-                }
-                display_value += key;
-        }
-
-        if (display_value.length > 11) {
-            display_value = "TOO BIG";
-            error = true;
-        }
-        
-        screen.innerText = display_value;
+            if (new_num) {
+                display_value = "";
+                new_num = false;
+            }
+            display_value += key;
     }
+
+    if (display_value.length > 11) {
+        display_value = "TOO BIG";
+        error = true;
+    }
+    
+    screen.innerText = display_value;
+}
+
+
+keypad.addEventListener("click", (event) => {
+    if (event.target.classList.contains("key")) {
+        key = event.target.innerText;
+        update(key);
+    }
+})
+
+
+document.addEventListener("keydown", (event) => {
+    key = event.key;
+
+    if ((0 <= key && key <= 9) || [".", "+", "-", "="].includes(key)) update(key);
+    if (key == "*") update("×");
+    if (key == "/") update("÷");
+    if (key == "Enter") update("=");
+    if (key == "Backspace") update("CANCEL");
+    if (key == "c") update("CLEAR");
 })
